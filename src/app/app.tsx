@@ -5,14 +5,14 @@ import TicketPage from "../pages/tickets-page";
 import TicketDetailPage from "../pages/ticket-detail-page";
 
 const App = () => {
-  return (
-    <Router>
-      <Switch>
-        <Route exact path="/tickets" component={TicketPage} />
-        <Route exact path="/tickets/:id" component={TicketDetailPage} />
-      </Switch>
-    </Router>
-  );
+	return (
+		<Router>
+			<Switch>
+				<Route exact path="/tickets" component={TicketPage} />
+				<Route exact path="/tickets/:id" component={TicketDetailPage} />
+			</Switch>
+		</Router>
+	);
 };
 
 export default App;
