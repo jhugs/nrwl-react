@@ -43,7 +43,7 @@ export class BackendService {
 	lastId = 1;
 
 	private findTicketById = (id: number) => {
-		const found = this.storedTickets.find((ticket) => ticket.id === +id);
+		const found = this.storedTickets.find((ticket) => ticket.id === id);
 		if (found) return found;
 		throw new Error(`Ticket (id=${id}) not found`);
 	};
@@ -81,7 +81,7 @@ export class BackendService {
 	}
 
 	assign(ticketId: number, userId: number) {
-		const foundTicket = this.findTicketById(+ticketId);
+		const foundTicket = this.findTicketById(ticketId);
 		const user = this.findUserById(+userId);
 
 		if (foundTicket && user) {
@@ -97,7 +97,7 @@ export class BackendService {
 	}
 
 	complete(ticketId: number, completed: boolean) {
-		const foundTicket = this.findTicketById(+ticketId);
+		const foundTicket = this.findTicketById(ticketId);
 		if (foundTicket) {
 			return of(foundTicket).pipe(
 				delay(randomDelay()),

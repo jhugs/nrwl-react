@@ -1,3 +1,11 @@
+import {
+	Button,
+	Checkbox,
+	FormControl,
+	FormControlLabel,
+	Input,
+	InputLabel,
+} from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -53,6 +61,7 @@ const TicketDetailPage: React.FC<TicketDetailPageProps> = (
 					.complete(updatedTicket.id, updatedTicket.completed)
 					.toPromise();
 			} catch (error) {
+				// TODO: not being caught?
 				setError(
 					"There was an issue updating the completed status of this ticket.",
 				);
@@ -69,6 +78,7 @@ const TicketDetailPage: React.FC<TicketDetailPageProps> = (
 					.assign(updatedTicket.id, updatedTicket.assigneeId)
 					.toPromise();
 			} catch (error) {
+				// TODO: not being caught?
 				setError(
 					"There was an issue updating the Assignee on this ticket",
 				);
@@ -85,45 +95,59 @@ const TicketDetailPage: React.FC<TicketDetailPageProps> = (
 			<h2>{`Ticket Detail: ${initialTicket?.id ?? "..."}`}</h2>
 			<form>
 				<div>
-					<label htmlFor="des">Description:</label>
-					<input
-						id="des"
-						type="text"
-						disabled={true}
-						value={updatedTicket?.description}
-						onChange={(e) =>
-							handleUpdateTicket("description", e.target.value)
+					<FormControl>
+						<InputLabel htmlFor="des">Description:</InputLabel>
+						<Input
+							id="des"
+							type="text"
+							disabled={true}
+							value={updatedTicket?.description}
+							onChange={(e) =>
+								handleUpdateTicket(
+									"description",
+									e.target.value,
+								)
+							}
+						/>
+					</FormControl>
+					<FormControl>
+						<InputLabel htmlFor="assignee">Assignee:</InputLabel>
+						<Input
+							id="assignee"
+							type="text"
+							disabled={loading}
+							value={updatedTicket?.assigneeId ?? 0}
+							onChange={(e) =>
+								handleUpdateTicket("assigneeId", e.target.value)
+							}
+						/>
+					</FormControl>
+					<FormControlLabel
+						control={
+							<Checkbox
+								checked={updatedTicket?.completed}
+								onChange={(e) =>
+									handleUpdateTicket(
+										"completed",
+										e.target.checked,
+									)
+								}
+								color="primary"
+							/>
 						}
+						label="Completed"
 					/>
 				</div>
-				<div>
-					<label htmlFor="assignee">Assignee:</label>
-					<input
-						id="assignee"
-						type="text"
-						disabled={loading}
-						value={updatedTicket?.assigneeId ?? 0}
-						onChange={(e) =>
-							handleUpdateTicket("assigneeId", e.target.value)
-						}
-					/>
-				</div>
-				<div>
-					<label htmlFor="completed">Completed:</label>
-					<input
-						id="completed"
-						type="checkbox"
-						disabled={loading}
-						checked={updatedTicket?.completed}
-						onChange={(e) =>
-							handleUpdateTicket("completed", e.target.checked)
-						}
-					/>
-				</div>
-				<button type="submit" onClick={handleSave}>
+				<Button
+					variant="contained"
+					color="primary"
+					type="submit"
+					onClick={handleSave}>
 					Save
-				</button>
-				<button onClick={refresh}>Cancel</button>
+				</Button>
+				<Button variant="contained" color="secondary" onClick={refresh}>
+					Cancel
+				</Button>
 			</form>
 			<div>{`${isSaving ? "Saving..." : ""}`}</div>
 		</div>

@@ -5,6 +5,10 @@ import {
 	Paper,
 	TableRow,
 	TableBody,
+	InputLabel,
+	FormControl,
+	Input,
+	Button,
 } from "@material-ui/core";
 import TableContainer from "@material-ui/core/TableContainer";
 import React, { useState } from "react";
@@ -24,8 +28,26 @@ export interface TicketPageProps {}
 // -----------------------------------------------------------------------------------------
 
 const TicketPage: React.FC<TicketPageProps> = (props: TicketPageProps) => {
-	const { tickets, error, loading } = useGetBackendService();
+	const { tickets, error, loading, service, setError } =
+		useGetBackendService();
 	const [filterByCompleted, setFilterByCompleted] = useState(false);
+	const [newTicketDescription, setNewTicketDescripton] = useState("");
+
+	const handleNewTicket = async () => {
+		try {
+			await service
+				.newTicket({ description: newTicketDescription })
+				.toPromise();
+		} catch (error) {
+			// TODO: not being caught?
+			setError(
+				"There was an issue updating the completed status of this ticket.",
+			);
+			console.error(error);
+		}
+
+		setNewTicketDescripton("");
+	};
 
 	return (
 		<div>
@@ -40,7 +62,7 @@ const TicketPage: React.FC<TicketPageProps> = (props: TicketPageProps) => {
 					onChange={(e) => setFilterByCompleted(e.target.checked)}
 				/>
 			</div>
-			{tickets ? (
+			{tickets.length > 0 ? (
 				<TableContainer component={Paper}>
 					<Table aria-label="simple table">
 						<TableHead>
@@ -87,6 +109,29 @@ const TicketPage: React.FC<TicketPageProps> = (props: TicketPageProps) => {
 				<span>{loading ? "..." : "Tickets unavailable"}</span>
 			)}
 			<div>{error !== null && error}</div>
+
+			<h2>Add new</h2>
+			<form>
+				<div>
+					<FormControl>
+						<InputLabel htmlFor="des">Description:</InputLabel>
+						<Input
+							id="des"
+							type="text"
+							value={newTicketDescription}
+							onChange={(e) =>
+								setNewTicketDescripton(e.target.value)
+							}
+						/>
+					</FormControl>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleNewTicket}>
+						Save
+					</Button>
+				</div>
+			</form>
 		</div>
 	);
 };
