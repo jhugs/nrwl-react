@@ -8,7 +8,7 @@ const App = () => {
 	return (
 		<Router>
 			<Switch>
-				<Route exact path="/tickets" component={TicketPage} />
+				<Route exact path="/" component={TicketPage} />
 				<Route exact path="/tickets/:id" component={TicketDetailPage} />
 			</Switch>
 		</Router>

@@ -85,16 +85,22 @@ const TicketDetailPage: React.FC = () => {
 		setIsSaving(false);
 	};
 
+	if (loading) {
+		return <div>...</div>;
+	}
+
 	return (
 		<div>
-			<Link to="/tickets">Back</Link>
+			<Link to="/">Back</Link>
 			<h2>{`Ticket Detail: ${initialTicket?.id ?? "..."}`}</h2>
 			<form>
-				<div>
-					<FormControl>
-						<InputLabel htmlFor="des">Description:</InputLabel>
+				<FormControl>
+					<div>
+						<InputLabel htmlFor="description">
+							Description:
+						</InputLabel>
 						<Input
-							id="des"
+							id="description"
 							type="text"
 							disabled={true}
 							value={updatedTicket?.description}
@@ -105,8 +111,10 @@ const TicketDetailPage: React.FC = () => {
 								)
 							}
 						/>
-					</FormControl>
-					<FormControl>
+					</div>
+				</FormControl>
+				<FormControl>
+					<div>
 						{/* {"TODO: probably make this field a dropdown with a list of available users"} */}
 						<InputLabel htmlFor="assignee">Assignee:</InputLabel>
 						<Input
@@ -118,23 +126,23 @@ const TicketDetailPage: React.FC = () => {
 								handleUpdateTicket("assigneeId", e.target.value)
 							}
 						/>
-					</FormControl>
-					<FormControlLabel
-						control={
-							<Checkbox
-								checked={updatedTicket?.completed}
-								onChange={(e) =>
-									handleUpdateTicket(
-										"completed",
-										e.target.checked,
-									)
-								}
-								color="primary"
-							/>
-						}
-						label="Completed"
-					/>
-				</div>
+					</div>
+				</FormControl>
+				<FormControlLabel
+					control={
+						<Checkbox
+							checked={updatedTicket?.completed}
+							onChange={(e) =>
+								handleUpdateTicket(
+									"completed",
+									e.target.checked,
+								)
+							}
+							color="primary"
+						/>
+					}
+					label="Completed"
+				/>
 				<Button
 					variant="contained"
 					color="primary"
