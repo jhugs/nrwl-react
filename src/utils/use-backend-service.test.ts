@@ -33,7 +33,7 @@ describe("useBackendService", () => {
 	describe("when id is present", () => {
 		it("returns single ticket", async () => {
 			// Arrange & Act
-			const { hookResult } = setupSut(undefined);
+			const { hookResult } = setupSut();
 
 			// Act
 			act(() => {
