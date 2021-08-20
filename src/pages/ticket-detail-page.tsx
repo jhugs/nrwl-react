@@ -16,8 +16,6 @@ import useBackendService from "../utils/use-backend-service";
 // #region Interfaces
 // -----------------------------------------------------------------------------------------
 
-export interface TicketDetailPageProps {}
-
 interface PageUrlParams {
 	id?: string;
 }
@@ -28,9 +26,7 @@ interface PageUrlParams {
 // #region Component
 // -----------------------------------------------------------------------------------------
 
-const TicketDetailPage: React.FC<TicketDetailPageProps> = (
-	props: TicketDetailPageProps,
-) => {
+const TicketDetailPage: React.FC = () => {
 	const { id } = useParams<PageUrlParams>();
 	const { tickets, refresh, service, setError, loading } =
 		useBackendService(id);
@@ -111,6 +107,7 @@ const TicketDetailPage: React.FC<TicketDetailPageProps> = (
 						/>
 					</FormControl>
 					<FormControl>
+						{/* {"TODO: probably make this field a dropdown with a list of available users"} */}
 						<InputLabel htmlFor="assignee">Assignee:</InputLabel>
 						<Input
 							id="assignee"

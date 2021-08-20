@@ -13,23 +13,14 @@ import {
 import TableContainer from "@material-ui/core/TableContainer";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import useGetBackendService from "../utils/use-backend-service";
-
-// -----------------------------------------------------------------------------------------
-// #region Interfaces
-// -----------------------------------------------------------------------------------------
-
-export interface TicketPageProps {}
-
-// #endregion Interfaces
+import useBackendService from "../utils/use-backend-service";
 
 // -----------------------------------------------------------------------------------------
 // #region Component
 // -----------------------------------------------------------------------------------------
 
-const TicketPage: React.FC<TicketPageProps> = (props: TicketPageProps) => {
-	const { tickets, error, loading, service, setError } =
-		useGetBackendService();
+const TicketPage: React.FC = () => {
+	const { tickets, error, loading, service, setError } = useBackendService();
 	const [filterByCompleted, setFilterByCompleted] = useState(false);
 	const [newTicketDescription, setNewTicketDescripton] = useState("");
 

@@ -1,0 +1,16 @@
+{
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"editor.rulers": [100],
+	"eslint.lintTask.enable": true,
+	"prettier.requireConfig": true,
+	"prettier.prettierPath": "./node_modules/.bin/prettier",
+	"trailing-spaces.trimOnSave": true,
+	"typescript.preferences.quoteStyle": "double"
+}
