@@ -82,13 +82,13 @@ export class BackendService {
 
 	assign(ticketId: number, userId: number) {
 		const foundTicket = this.findTicketById(ticketId);
-		const user = this.findUserById(+userId);
+		const user = this.findUserById(userId);
 
 		if (foundTicket && user) {
 			return of(foundTicket).pipe(
 				delay(randomDelay()),
 				tap((ticket: Ticket) => {
-					ticket.assigneeId = +userId;
+					ticket.assigneeId = userId;
 				}),
 			);
 		}
