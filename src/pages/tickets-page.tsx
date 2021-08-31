@@ -11,8 +11,11 @@ import {
 	Button,
 } from "@material-ui/core";
 import TableContainer from "@material-ui/core/TableContainer";
+import { useAtom } from "jotai";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import FilterByCompletedAtom from "../atoms/filter-by-completed-atom";
+import UsersAtom from "../atoms/users-atom";
 import useBackendService from "../utils/use-backend-service";
 
 // -----------------------------------------------------------------------------------------
@@ -20,24 +23,34 @@ import useBackendService from "../utils/use-backend-service";
 // -----------------------------------------------------------------------------------------
 
 const TicketPage: React.FC = () => {
-	const { tickets, error, loading, service, setError } = useBackendService();
-	const [filterByCompleted, setFilterByCompleted] = useState(false);
+	const [filterByCompleted, setFilterByCompleted] = useAtom(
+		FilterByCompletedAtom,
+	);
+	const { tickets, error, loading, service, setError, handleError } =
+		useBackendService();
 	const [newTicketDescription, setNewTicketDescripton] = useState("");
+	const [newUserName, setNewUserName] = useState("");
+
+	const [users] = useAtom(UsersAtom);
 
 	const handleNewTicket = async () => {
-		try {
-			await service
-				.newTicket({ description: newTicketDescription })
-				.toPromise();
-		} catch (error) {
-			// TODO: not being caught?
-			setError(
-				"There was an issue updating the completed status of this ticket.",
-			);
-			console.error(error);
-		}
+		service.newTicket({ description: newTicketDescription }).subscribe({
+			error: handleError,
+			next: () => {
+				setNewTicketDescripton("");
+			},
+		});
+	};
 
-		setNewTicketDescripton("");
+	const handleNewUser = () => {
+		service.newUser(newUserName).subscribe({
+			error: (err) => {
+				setError(err);
+			},
+			next: () => {
+				setNewUserName("");
+			},
+		});
 	};
 
 	return (
@@ -60,7 +73,7 @@ const TicketPage: React.FC = () => {
 							<TableRow>
 								<TableCell>ID</TableCell>
 								<TableCell align="right">Description</TableCell>
-								<TableCell align="right">AssgineeId</TableCell>
+								<TableCell align="right">Assignee</TableCell>
 								<TableCell align="right">Completed</TableCell>
 								<TableCell align="right">Actions</TableCell>
 							</TableRow>
@@ -72,27 +85,36 @@ const TicketPage: React.FC = () => {
 										? t.completed === filterByCompleted
 										: true,
 								)
-								.map((t) => (
-									<TableRow key={t.id}>
-										<TableCell component="th" scope="row">
-											{t.id}
-										</TableCell>
-										<TableCell align="right">
-											{t.description}
-										</TableCell>
-										<TableCell align="right">
-											{t.assigneeId}
-										</TableCell>
-										<TableCell align="right">
-											{t.completed?.toString()}
-										</TableCell>
-										<TableCell align="right">
-											<Link to={`/tickets/${t.id}`}>
-												View
-											</Link>
-										</TableCell>
-									</TableRow>
-								))}
+								.map((ticket) => {
+									const user = users.find(
+										(u) => u.id === ticket.assigneeId,
+									);
+									console.log(ticket);
+									return (
+										<TableRow key={`ticket-${ticket.id}`}>
+											<TableCell
+												component="th"
+												scope="row">
+												{ticket.id}
+											</TableCell>
+											<TableCell align="right">
+												{ticket.description}
+											</TableCell>
+											<TableCell align="right">
+												{user?.name ?? "N/A"}
+											</TableCell>
+											<TableCell align="right">
+												{ticket.completed?.toString()}
+											</TableCell>
+											<TableCell align="right">
+												<Link
+													to={`/tickets/${ticket.id}`}>
+													View
+												</Link>
+											</TableCell>
+										</TableRow>
+									);
+								})}
 						</TableBody>
 					</Table>
 				</TableContainer>
@@ -119,6 +141,27 @@ const TicketPage: React.FC = () => {
 						variant="contained"
 						color="primary"
 						onClick={handleNewTicket}>
+						Save
+					</Button>
+				</div>
+			</form>
+
+			<h2>Add new user</h2>
+			<form>
+				<div>
+					<FormControl>
+						<InputLabel htmlFor="des">Name:</InputLabel>
+						<Input
+							id="user"
+							type="text"
+							value={newUserName}
+							onChange={(e) => setNewUserName(e.target.value)}
+						/>
+					</FormControl>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleNewUser}>
 						Save
 					</Button>
 				</div>

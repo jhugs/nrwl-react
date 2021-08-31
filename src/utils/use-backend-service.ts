@@ -6,6 +6,7 @@ import { BackendService, Ticket } from "../backend";
 export interface UseBackendServiceResult {
 	error: string;
 	get: (id: number) => void;
+	handleError: (err: any) => void;
 	index: VoidFunction;
 	loading: boolean;
 	refresh: VoidFunction;
@@ -41,6 +42,11 @@ export default function useBackendService(id?: string) {
 		}
 	};
 
+	const handleError = (err: any) => {
+		setError(err.message);
+		console.error(err);
+	};
+
 	const fetch = useCallback(async () => {
 		setLoading(true);
 
@@ -67,5 +73,6 @@ export default function useBackendService(id?: string) {
 		service: backendService,
 		setError,
 		tickets,
+		handleError,
 	};
 }

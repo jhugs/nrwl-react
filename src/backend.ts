@@ -19,7 +19,7 @@ export type Ticket = {
 };
 
 function randomDelay() {
-	return Math.random() * 4000;
+	return Math.random() * 2000;
 }
 
 export class BackendService {
@@ -41,6 +41,7 @@ export class BackendService {
 	storedUsers: User[] = [{ id: 111, name: "Victor" }];
 
 	lastId = 1;
+	lastUserId = 111;
 
 	private findTicketById = (id: number) => {
 		const found = this.storedTickets.find((ticket) => ticket.id === id);
@@ -66,6 +67,17 @@ export class BackendService {
 		return of(this.findUserById(id)).pipe(delay(randomDelay()));
 	}
 
+	newUser(name: string) {
+		const newUser = {
+			id: ++this.lastUserId,
+			name: name,
+		};
+		return of(newUser).pipe(
+			delay(randomDelay()),
+			tap((user: User) => this.storedUsers.push(user)),
+		);
+	}
+
 	newTicket(payload: { description: string }) {
 		const newTicket: Ticket = {
 			id: ++this.lastId,
@@ -84,6 +96,8 @@ export class BackendService {
 		const foundTicket = this.findTicketById(ticketId);
 		const user = this.findUserById(userId);
 
+		console.log(foundTicket);
+		console.log(user);
 		if (foundTicket && user) {
 			return of(foundTicket).pipe(
 				delay(randomDelay()),
@@ -93,7 +107,12 @@ export class BackendService {
 			);
 		}
 
-		return throwError(new Error("ticket or user not found"));
+		return throwError(new Error("ticket or user not found")).pipe(
+			tap(
+				() => console.log("first"),
+				(error) => console.log(error),
+			),
+		);
 	}
 
 	complete(ticketId: number, completed: boolean) {

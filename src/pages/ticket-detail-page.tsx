@@ -6,9 +6,11 @@ import {
 	Input,
 	InputLabel,
 } from "@material-ui/core";
+import { useAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
+import UsersAtom from "../atoms/users-atom";
 import { Ticket } from "../backend";
 import useBackendService from "../utils/use-backend-service";
 
@@ -28,11 +30,13 @@ interface PageUrlParams {
 
 const TicketDetailPage: React.FC = () => {
 	const { id } = useParams<PageUrlParams>();
-	const { tickets, refresh, service, setError, loading } =
+	const { tickets, refresh, service, error, loading, handleError } =
 		useBackendService(id);
 	const initialTicket = tickets[0];
 	const [updatedTicket, setUpdatedTicket] = useState(initialTicket);
 	const [isSaving, setIsSaving] = useState(false);
+
+	const [users] = useAtom(UsersAtom);
 
 	useEffect(() => {
 		setUpdatedTicket(initialTicket);
@@ -52,34 +56,22 @@ const TicketDetailPage: React.FC = () => {
 
 		setIsSaving(true);
 		if (initialTicket.completed !== updatedTicket.completed) {
-			try {
-				await service
-					.complete(updatedTicket.id, updatedTicket.completed)
-					.toPromise();
-			} catch (error) {
-				// TODO: not being caught?
-				setError(
-					"There was an issue updating the completed status of this ticket.",
-				);
-				console.error(error);
-			}
+			service
+				.complete(updatedTicket.id, updatedTicket.completed)
+				.subscribe({
+					error: (error) => handleError(error),
+				});
 		}
 
 		if (
 			initialTicket.assigneeId !== updatedTicket.assigneeId &&
 			updatedTicket.assigneeId !== null
 		) {
-			try {
-				await service
-					.assign(updatedTicket.id, updatedTicket.assigneeId)
-					.toPromise();
-			} catch (error) {
-				// TODO: not being caught?
-				setError(
-					"There was an issue updating the Assignee on this ticket",
-				);
-				console.error(error);
-			}
+			service
+				.assign(updatedTicket.id, updatedTicket.assigneeId)
+				.subscribe({
+					error: (error) => handleError(error),
+				});
 		}
 
 		setIsSaving(false);
@@ -115,17 +107,25 @@ const TicketDetailPage: React.FC = () => {
 				</FormControl>
 				<FormControl>
 					<div>
-						{/* {"TODO: probably make this field a dropdown with a list of available users"} */}
-						<InputLabel htmlFor="assignee">Assignee:</InputLabel>
-						<Input
-							id="assignee"
-							type="text"
-							disabled={loading}
-							value={updatedTicket?.assigneeId ?? 0}
+						<select
+							name="assignees"
+							id="users"
 							onChange={(e) =>
-								handleUpdateTicket("assigneeId", e.target.value)
+								handleUpdateTicket(
+									"assigneeId",
+									parseInt(e.target.value, 10),
+								)
 							}
-						/>
+							value={`${updatedTicket?.assigneeId}`}>
+							<option value={404}>invalid user</option>
+							{users.map((u) => {
+								return (
+									<option key={u.id} value={u.id}>
+										{u.name}
+									</option>
+								);
+							})}
+						</select>
 					</div>
 				</FormControl>
 				<FormControlLabel
@@ -155,6 +155,7 @@ const TicketDetailPage: React.FC = () => {
 				</Button>
 			</form>
 			<div>{`${isSaving ? "Saving..." : ""}`}</div>
+			<div>{error !== null && error}</div>
 		</div>
 	);
 };
